@@ -6,10 +6,10 @@
 </template>
 <script>
 export default {
-    data() {
-        return {
-            message:'这里是aacount'
-        }
-    },
+  data () {
+    return {
+      message: '这里是aacount'
+    }
+  }
 }
 </script>
