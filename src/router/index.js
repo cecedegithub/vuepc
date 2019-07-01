@@ -1,53 +1,68 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import login from '../views/Login/login.vue'
-import Home from '../views/Home/home.vue'
-import article from '../components/article.vue'
-import publish from '../components/publish.vue'
-import comment from '../components/comment.vue'
-import image from '../components/image.vue'
-import account from '../components/accout.vue'
+import {
+  getUser
+} from '../untils/auth'
+
 Vue.use(Router)
-export default new Router({
+const router = new Router({
   routes: [{
     path: '/',
-    component: login
+    component: () => import('@/views/layout'),
+    children: [{
+      name: 'home',
+      path: '',
+      component: () => import('@/views/Home/home.vue')
+    },
+    {
+      name: 'publish',
+      path: '/publish',
+      component: () => import('@/views/publish/publish.vue')
+    }, {
+      name: 'publish-edit',
+      path: '/publish/:id',
+      component: () => import('@/views/publish/publish.vue')
+    },
+    {
+      name: 'article',
+      path: '/article',
+      component: () => import('@/views/article')
+    }
+    ]
   },
   {
+    name: 'login',
     path: '/login',
-    component: login
-  },
-  {
-    path: '/article',
-    component: article
-  }, {
-    path: '/publish',
-    component: publish
-  }, {
-    path: '/publish/:articleId',
-    component: Home
-  }, {
-    path: '/comment',
-    component: comment
-  }, {
-    path: '/image',
-    component: image
-  },
-  // }, {
-  //   path: '/fans',
-  //   component: fans
-  // }, {
-  //   path: '/fans/overview',
-  //   component: overview
-  // }, {
-  //   path: '/fans/portrayal',
-  //   component: portrayal
-  // }, {
-  //   component: list
-  // }
-  {
-    path: '/account',
-    component: account
+    component: () => import('@/views/Login/login.vue')
   }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  // to and from are both route objects. must call `next`.
+  // const userInfo = window.localStorage.getItem('user_info')
+  const userInfo = getUser()
+
+  if (to.path !== '/login') {
+    if (!userInfo) {
+      next({
+        name: 'login'
+      })
+    } else {
+      next()
+    }
+  } else {
+    // 这就是去往登录页
+    if (!userInfo) {
+      next()
+    } else {
+      window.location.href = '/#/'
+      window.location.reload()
+    }
+  }
+})
+router.afterEach((to, from) => {
+
+})
+
+export default router

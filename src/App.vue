@@ -1,7 +1,8 @@
 <template>
-  <router-view>
-    <router-link to="/login">登陆页面</router-link>
-  </router-view>
+<div id="app">
+  <router-view/>
+</div>
+
 </template>
 <script>
 export default {}

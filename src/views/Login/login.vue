@@ -1,7 +1,7 @@
 <template>
   <div class="contenter">
     <img src="./logo_index.png" alt>
-    <el-input placeholder="请输入手机号" v-model="form.mobile" class="one"></el-input>
+    <el-input placeholder="请输入手机号" v-model="form.mobile" class="one" ref="bl"></el-input>
     <br>
     <el-input type="text" v-model="form.code" placeholder="请输入验证码" class="two"></el-input>
     <el-row>
@@ -25,8 +25,8 @@
 </template>
 
 <script>
-import axios from 'axios'
 import '@/vendor/gt.js'
+import { saveUser } from '@/untils/auth'
 export default {
   data () {
     return {
@@ -40,32 +40,23 @@ export default {
       checked: true
     }
   },
+  mounted () {
+    this.$refs.bl.focus()
+  },
   methods: {
-    sendAuthcode () {
+    async sendAuthcode () {
       const { mobile } = this.form
       const newthis = this
-      if (this.form.mobile === '') {
-        this.$message('请您输入正确的手机号')
-      } else {
-        this.change = true
-        // const count = setInterval(() => {
-        //   this.message = "已发送 剩余:" + this.num + "秒";
-        //   if (this.num === 0) {
-        //     clearInterval(count);
-        //     this.change = false;
-        //     this.message = "发送验证码";
-        //     this.num = 61;
-        //   }
-        //   this.num--;
-        //   console.log(this.num);
-        // }, 1000);
-        axios({
-          method: 'get',
-          url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`,
-          data: this.form
-        }).then(res => {
-          console.log(res.data)
-          const { data } = res.data
+      try {
+        if (this.form.mobile === '') {
+          this.$message('请您输入正确的手机号')
+        } else {
+          this.change = true
+          const data = await this.$http({
+            method: 'get',
+            url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`,
+            data: this.form
+          })
           window.initGeetest(
             {
               // 以下配置参数来自服务端 SDK
@@ -93,18 +84,16 @@ export default {
                       newthis.num = 61
                     }
                     newthis.num--
-                    console.log(newthis.num)
                   }, 1000)
-
                   const result = captchaObj.getValidate()
-                  console.log(result)
+                  // console.log(result)
                   const {
                     geetest_challenge: challenge,
                     geetest_validate: validate,
                     geetest_seccode: seccode
                   } = result
-                  console.log(challenge, validate, seccode)
-                  axios({
+                  // console.log(challenge, validate, seccode)
+                  this.$http({
                     method: 'get',
                     url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
                     params: {
@@ -113,38 +102,44 @@ export default {
                       seccode
                     }
                   }).then(res => {
-                    console.log(res)
+                    // console.log(res)
                   })
                 })
                 .onError(function () {
                   // your code
                 })
               // 登陆事件
-            }
-          )
-        })
+            })
+        }
+      } catch (error) {
+        console.log(error)
       }
     },
-    sendLogin () {
-      if (this.mobile === '' || this.checked === false) {
-        this.$message('请详细阅读并同意之后进行登陆')
-      } else {
-        axios({
-          method: 'post',
-          url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
-          data: this.form
-        })
-          .then(res => {
-            // console.log(res)
-            this.$message('验证码成功')
-            this.$router.push({
-              name: 'home'
-            })
+    async sendLogin () {
+      try {
+        if (
+          this.form.mobile === '' ||
+          this.checked === false ||
+          this.form.code === ''
+        ) {
+          this.$message('请将信息填写完成之后在登陆')
+        } else {
+          const userInfo = await this.$http({
+            method: 'post',
+            // url: 'http://toutiao.course.itcast.cn/mp/v1_0/authorizations',
+            url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+            data: this.form
           })
-          .catch(e => {
-            this.$message.error('验证码错误,请您重新输入')
-            this.form.code = ''
+          saveUser(userInfo)
+          this.$message('验证码成功')
+          this.$router.push({
+            name: 'home'
           })
+        }
+      } catch (e) {
+        console.log(e)
+        this.$message.error('验证码错误,请您重新输入')
+        this.form.code = ''
       }
     }
   }
