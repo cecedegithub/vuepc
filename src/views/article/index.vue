@@ -85,8 +85,8 @@
 
 <script>
 export default {
-  name: "ArticleList",
-  data() {
+  name: 'ArticleList',
+  data () {
     return {
       articles: [],
       totalCount: 0,
@@ -95,68 +95,68 @@ export default {
       pageSize: 10,
       statTypes: [
         {
-          type: "info",
-          label: "草稿"
+          type: 'info',
+          label: '草稿'
         },
         {
-          type: "success",
-          label: "审核通过"
+          type: 'success',
+          label: '审核通过'
         },
         {
-          type: "",
-          label: "待审核"
+          type: '',
+          label: '待审核'
         },
         {
-          type: "warning",
-          label: "审核失败"
+          type: 'warning',
+          label: '审核失败'
         },
         {
-          type: "danger",
-          label: "已删除"
+          type: 'danger',
+          label: '已删除'
         }
       ]
-    };
+    }
   },
-  created() {
-    this.loadArticle();
+  created () {
+    this.loadArticle()
   },
   methods: {
-    async loadArticle() {
+    async loadArticle () {
       try {
         const res = await this.$http({
-          method: "get",
-          url: "http://ttapi.research.itcast.cn/mp/v1_0/articles",
+          method: 'get',
+          url: 'http://ttapi.research.itcast.cn/mp/v1_0/articles',
           params: {
             page: this.page, // 页码
             per_page: this.pageSize // 每页大小
           }
-        });
-       
-        this.articles = res.results;
+        })
+
+        this.articles = res.results
         this.totalCount = res.total_count
-        this.articleLoading = false;
+        this.articleLoading = false
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     },
-    async handleDelete(item) {
+    async handleDelete (item) {
       try {
-        await this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        });
+        await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
         await this.$http({
-          method: "DELETE",
+          method: 'DELETE',
           url: `http://ttapi.research.itcast.cn/mp/v1_0/articles/${item.id}`
-        });
+        })
         this.$message({
-          type: "success",
-          message: "删除成功"
-        });
-        this.loadArticle();
+          type: 'success',
+          message: '删除成功'
+        })
+        this.loadArticle()
       } catch (error) {
-        this.$message.error("取消成功");
+        this.$message.error('取消成功')
       }
       // 删除确认提示
 
@@ -165,12 +165,12 @@ export default {
     async handleCurrentChange (page) {
       // 将数据中的页码修改为当前最新改变的数据页码
       this.page = page
-     console.log('sss')
+      console.log('sss')
       // 页码改变，重新加载当前文章列表
-     this.loadArticle();
+      this.loadArticle()
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

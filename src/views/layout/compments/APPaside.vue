@@ -28,7 +28,7 @@
             <i class="el-icon-menu"></i>
             <span slot="title">内容列表</span>
           </el-menu-item>
-          <el-menu-item index="1-3">
+          <el-menu-item index="/comment">
             <i class="el-icon-menu"></i>
             <span slot="title">评论管理</span>
           </el-menu-item>
@@ -52,9 +52,9 @@
         <span slot="title">粉丝列表</span>
       </el-menu-item>
     </el-submenu>
-      <el-menu-item index="3">
+      <el-menu-item index="/account">
         <i class="el-icon-document"></i>
-        <span slot="title">导航三</span>
+        <span slot="title">用户</span>
       </el-menu-item>
     </el-menu>
   </div>

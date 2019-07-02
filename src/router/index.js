@@ -24,9 +24,19 @@ const router = new Router({
       component: () => import('@/views/publish/publish.vue')
     },
     {
+      name: 'account',
+      path: '/account/',
+      component: () => import('@/views/account/')
+    },
+    {
       name: 'article',
       path: '/article',
       component: () => import('@/views/article')
+    },
+    {
+      name: 'comment',
+      path: '/comment',
+      component: () => import('@/views/comment')
     }
     ]
   },
